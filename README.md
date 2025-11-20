@@ -1,0 +1,2 @@
+# kursus
+Platform Kursus
