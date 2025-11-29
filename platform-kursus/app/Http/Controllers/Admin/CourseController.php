@@ -8,12 +8,17 @@ use App\Models\Course;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class CourseController extends Controller
+class CourseController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware(['auth', 'role:admin']);
+        return [
+            new Middleware('auth'),
+            new Middleware('role:admin'),
+        ];
     }
 
     public function index()
