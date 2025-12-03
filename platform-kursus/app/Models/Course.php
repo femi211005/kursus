@@ -1,69 +1,77 @@
 <?php
-// app/Models/Course.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'title',
+        'category_id',
+        'name',
         'description',
         'teacher_id',
-        'category_id',
-        'start_date',
+        'course_picture',
         'end_date',
-        'is_active',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'start_date' => 'date',
-            'end_date' => 'date',
-            'is_active' => 'boolean',
-        ];
-    }
-
-    // Relationships
+    /**
+     * Relationship: One-to-Many with Teacher (User).
+     * This links each course with its teacher.
+     */
     public function teacher()
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsTo(User::class, 'teacher_id'); // Using 'teacher_id' as the foreign key
     }
 
+    /**
+     * Relationship: Many-to-Many with Students (Users).
+     * This links a course with many students (users).
+     */
+    public function participants()
+    {
+        return $this->belongsToMany(User::class, 'course_participants', 'course_id', 'student_id');
+    }
+
+    /**
+     * Relationship: One-to-Many with Category.
+     * This links each course with its category.
+     */
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
+    /**
+     * Relationship: One-to-Many with Content.
+     * This links each course with its content.
+     */
     public function contents()
     {
-        return $this->hasMany(Content::class)->orderBy('order_index');
+        return $this->hasMany(Content::class);
     }
 
-    public function students()
+
+
+    public function certificates()
     {
-        return $this->belongsToMany(User::class, 'enrollments', 'course_id', 'student_id')
-                    ->withTimestamps();
+        return $this->hasMany(Certificate::class, 'course_id');
     }
 
-    public function enrollments()
+    public function forumPosts()
     {
-        return $this->hasMany(Enrollment::class);
+        return $this->hasMany(ForumPost::class);
     }
 
-    // Helper Methods
-    public function getStudentCountAttribute()
+    public function isUserEnrolled($userId)
     {
-        return $this->students()->count();
+        return $this->participants()->where('id', $userId)->exists();
     }
 
-    public function isEnrolledBy($userId)
+    public function isActive()
     {
-        return $this->students()->where('student_id', $userId)->exists();
+        return is_null($this->end_date) || $this->end_date >= now();
     }
+
+    
 }

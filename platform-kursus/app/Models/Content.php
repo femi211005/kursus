@@ -1,39 +1,42 @@
 <?php
-// app/Models/Content.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Content extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'course_id',
         'title',
-        'content',
-        'order_index',
+        'body',
+        'video_url',
     ];
 
-    // Relationships
+    /**
+     * Relasi Many-to-One dengan Course.
+     * Setiap konten milik satu kursus.
+     */
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
+    /**
+     * Relasi One-to-Many dengan ContentProgress.
+     * Setiap konten dapat memiliki banyak progres dari siswa.
+     */
     public function progress()
     {
-        return $this->hasMany(Progress::class);
+        return $this->hasOne(ContentProgress::class);
     }
 
-    // Helper Methods
-    public function isCompletedBy($userId)
+
+    public function userProgress()
     {
-        return $this->progress()
-                    ->where('student_id', $userId)
-                    ->where('is_completed', true)
-                    ->exists();
+        return $this->hasMany(UserProgress::class, 'content_id');
     }
+
+    
 }

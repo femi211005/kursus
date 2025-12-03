@@ -31,20 +31,33 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:' . User::class,
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/@(gmail\.com|yahoo\.com)$/', $value)) {
+                        $fail('The email must be a valid Gmail or Yahoo address.');
+                    }
+                },
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
+    
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'profile_picture' => 'profile_pictures/defaultpp.jpg', // Tambahkan foto profil default
         ]);
-
+    
         event(new Registered($user));
-
+    
         Auth::login($user);
-
+    
         return redirect(route('dashboard', absolute: false));
     }
 }

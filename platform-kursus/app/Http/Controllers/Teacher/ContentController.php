@@ -1,99 +1,70 @@
 <?php
-// app/Http/Controllers/Teacher/ContentController.php
-
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\Course;
 use App\Models\Content;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class ContentController extends Controller
 {
-    public function __construct()
+    public function index()
     {
-        $this->middleware(['auth', 'role:teacher']);
+        $contents = Content::whereHas('course', function($q) {
+            $q->where('teacher_id', auth()->id());
+        })->paginate(10);
+
+        return view('teacher.contents.index', compact('contents'));
     }
 
-    public function index(Course $course)
+    public function create()
     {
-        if ($course->teacher_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $contents = $course->contents()->orderBy('order_index')->get();
-        return view('teacher.contents.index', compact('course', 'contents'));
+        $courses = auth()->user()->coursesAsTeacher()->get();
+        return view('teacher.contents.create', compact('courses'));
     }
 
-    public function create(Course $course)
+    public function store(Request $request)
     {
-        if ($course->teacher_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $maxOrder = $course->contents()->max('order_index') ?? 0;
-        return view('teacher.contents.create', compact('course', 'maxOrder'));
-    }
-
-    public function store(Request $request, Course $course)
-    {
-        if ($course->teacher_id !== auth()->id()) {
-            abort(403);
-        }
-
         $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'order_index' => 'required|integer|min:1',
+            'course_id' => 'required|exists:courses,id',
+            'title'     => 'required',
+            'content'   => 'required',
+            'order'     => 'required|integer',
         ]);
 
-        Content::create([
-            'course_id' => $course->id,
-            'title' => $request->title,
-            'content' => $request->content,
-            'order_index' => $request->order_index,
-        ]);
+        $course = Course::findOrFail($request->course_id);
+        if ($course->teacher_id != auth()->id()) abort(403);
 
-        return redirect()->route('teacher.contents.index', $course)
-            ->with('success', 'Content created successfully.');
+        Content::create($request->all());
+        return redirect()->route('teacher.contents.index')->with('success', 'Materi berhasil dibuat');
     }
 
-    public function edit(Course $course, Content $content)
+    public function edit(Content $content)
     {
-        if ($course->teacher_id !== auth()->id() || $content->course_id !== $course->id) {
-            abort(403);
-        }
-
-        return view('teacher.contents.edit', compact('course', 'content'));
+        if ($content->course->teacher_id != auth()->id()) abort(403);
+        $courses = auth()->user()->coursesAsTeacher()->get();
+        return view('teacher.contents.edit', compact('content', 'courses'));
     }
 
-    public function update(Request $request, Course $course, Content $content)
+    public function update(Request $request, Content $content)
     {
-        if ($course->teacher_id !== auth()->id() || $content->course_id !== $course->id) {
-            abort(403);
-        }
+        if ($content->course->teacher_id != auth()->id()) abort(403);
 
         $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'order_index' => 'required|integer|min:1',
+            'course_id' => 'required|exists:courses,id',
+            'title'     => 'required',
+            'content'   => 'required',
+            'order'     => 'required|integer',
         ]);
 
         $content->update($request->all());
-
-        return redirect()->route('teacher.contents.index', $course)
-            ->with('success', 'Content updated successfully.');
+        return redirect()->route('teacher.contents.index')->with('success', 'Materi berhasil diperbarui');
     }
 
-    public function destroy(Course $course, Content $content)
+    public function destroy(Content $content)
     {
-        if ($course->teacher_id !== auth()->id() || $content->course_id !== $course->id) {
-            abort(403);
-        }
-
+        if ($content->course->teacher_id != auth()->id()) abort(403);
         $content->delete();
-
-        return redirect()->route('teacher.contents.index', $course)
-            ->with('success', 'Content deleted successfully.');
+        return redirect()->route('teacher.contents.index')->with('success', 'Materi dihapus');
     }
 }
