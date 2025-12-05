@@ -71,6 +71,11 @@ class CourseController extends Controller
                 // Simpan progres ke peserta
                 $participant->progressPercentage = round(min($progressPercentage, 100), 2); // Tidak lebih dari 100%
             }
+
+            $courses = Course::with('category', 'teacher')
+            ->withCount('participants')
+            ->limit(5)
+            ->get();
         }
     
         return view('dashboard.courses.index', compact('courses', 'statusFilter'));
@@ -380,28 +385,13 @@ class CourseController extends Controller
     //     return view('dashboard.' . $user->role . '.myClass', compact('enrolledCourses'));
     // }
 
-    
- 
     public function wel()
     {
-        $courses = Course::withCount('participants')
-            ->where('end_date', '>=', now()) // Filter untuk menampilkan kursus yang belum melewati end_date
-            ->orderBy('participants_count', 'desc') // Urutkan berdasarkan jumlah peserta
-            ->take(5)
+        $courses = Course::with('category', 'teacher')
+            ->withCount('participants')
+            ->limit(5)
             ->get();
         
-        // Pastikan 'courses' dikirim ke view
         return view('wel2', compact('courses'));
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
+    }    
 }

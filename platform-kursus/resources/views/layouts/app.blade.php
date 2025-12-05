@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Learnify') }}</title>
 
         <!-- Fonts -->
         <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
@@ -18,25 +18,18 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            {{-- Cek halaman dan role, tampilkan navbar yang sesuai --}}
-          {{-- @if (request()->routeIs('dashboard.admin.home') || request()->routeIs('admin.*'))
-                @include('layouts.navbar.navigation') <!-- Navbar untuk admin -->
-            @elseif (request()->routeIs('dashboard.teacher.home') || request()->routeIs('teacher.*'))
-                @include('layouts.navbar.teacher') <!-- Navbar untuk teacher -->
+            {{-- Tampilkan navbar berdasarkan user role dan route --}}
+            @auth
+                @if (auth()->user()->role === 'admin')
+                    @include('layouts.navbar.navigation')
+                @elseif (auth()->user()->role === 'teacher')
+                    @include('layouts.navbar.teacher')
+                @elseif (auth()->user()->role === 'student')
+                    @include('layouts.navbar.student')
+                @endif
             @else
-                @include('layouts.navbar') <!-- Navbar default untuk halaman lain -->
-            @endif --}}
-
-            @if (auth()->check() && auth()->user()->role === 'admin' && request()->is('admin*'))
-                @include('layouts.navbar.navigation') <!-- Navbar untuk admin -->
-            @elseif (auth()->check() && auth()->user()->role === 'teacher' && request()->is('teacher*'))
-                @include('layouts.navbar.teacher') <!-- Navbar untuk teacher -->
-            @elseif (auth()->check() && auth()->user()->role === 'student' && request()->is('student*'))
-                @include('layouts.navbar.student') <!-- Navbar untuk teacher -->
-            @else
-                @include('layouts.navbar') <!-- Navbar default untuk halaman lain -->
-            @endif
-
+                @include('layouts.navbar')
+            @endauth
 
             <!-- Page Heading -->
             @isset($header)
@@ -55,41 +48,59 @@
 
         <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
     
-        {{-- <script src="https://cdn.tiny.cloud/1/8zddtp5s9al63hzts3peio7qeoqe5hf0vkuetoo68tn6n20h/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.2.0/tinymce.min.js"></script>
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
         <script>
-            tinymce.init({
-                selector: '#description', // ID of the textarea
-                plugins: 'lists link image table code textcolor colorpicker',
-                toolbar: 'undo redo | formatselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | link image | code',
-                menubar: false, // Hide the menu bar for a simpler interface
-                height: 400, // Height of the editor
-                branding: false, // Remove "Powered by TinyMCE" branding
+            document.addEventListener('DOMContentLoaded', function () {
+                if (!document.querySelector('#description')) {
+                    return;
+                }
+
+                tinymce.init({
+                    selector: '#description',
+                    plugins: 'lists link image table code textcolor colorpicker',
+                    toolbar: 'undo redo | formatselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table | link image | code',
+                    menubar: false,
+                    height: 400,
+                    branding: false,
+                });
             });
 
-            // document.querySelector('form').addEventListener('submit', function(e) {
-            //     // Ambil konten dari TinyMCE
-            //     let content = tinymce.get('description').getContent();
+            // Carousel Testimonial
+            function initTestimonialCarousel() {
+                const carousel = document.getElementById('testimonial-carousel');
+                if (!carousel) return;
 
-            //     // Konversi ke string (tanpa HTML)
-            //     let plainTextContent = tinymce.get('description').getContent({ format: 'text' });
+                const items = carousel.querySelectorAll('[data-carousel-item]');
+                const prevBtn = carousel.querySelector('[data-carousel-prev]');
+                const nextBtn = carousel.querySelector('[data-carousel-next]');
+                let currentIndex = 0;
 
-            //     console.log('Plain Text Content:', plainTextContent); // Debug untuk melihat hasilnya
+                function showSlide(n) {
+                    items.forEach(item => item.classList.add('hidden'));
+                    items[n].classList.remove('hidden');
+                }
 
-            //     // Simpan hasilnya di textarea jika perlu
-            //     document.getElementById('description').value = plainTextContent;
+                if (prevBtn) prevBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex - 1 + items.length) % items.length;
+                    showSlide(currentIndex);
+                });
 
-            //     // Lanjutkan pengiriman form
-            //     tinymce.triggerSave();
-            // });
+                if (nextBtn) nextBtn.addEventListener('click', () => {
+                    currentIndex = (currentIndex + 1) % items.length;
+                    showSlide(currentIndex);
+                });
 
+                showSlide(0);
 
+                // Auto rotate every 5 seconds
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % items.length;
+                    showSlide(currentIndex);
+                }, 5000);
+            }
+
+            document.addEventListener('DOMContentLoaded', initTestimonialCarousel);
         </script>
-
-        
-
-
-    
-
     </body>
 </html>

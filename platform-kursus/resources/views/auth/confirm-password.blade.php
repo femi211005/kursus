@@ -6,20 +6,20 @@
     <form method="POST" action="{{ route('password.confirm') }}">
         @csrf
 
-        <!-- Password -->
         <div>
-            <x-input-label for="password" :value="__('Password')" />
+            <x-input-label for="password" :value="('Password')" class="text-gray-700" />
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <x-text-input id="password" 
+                class="block mt-1 w-full bg-[#FBEFEF] border-[#F9DFDF] text-gray-700 focus:border-[#F5AFAF] focus:ring-[#F5AFAF] rounded-md shadow-sm"
+                type="password"
+                name="password"
+                required autocomplete="current-password" />
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->get('password')" class="mt-2 text-[#F5AFAF]" />
         </div>
 
         <div class="flex justify-end mt-4">
-            <x-primary-button>
+            <x-primary-button class="ms-4 !bg-[#F5AFAF] hover:!bg-[#F9DFDF] !text-gray-800 border border-[#F9DFDF] focus:bg-[#F9DFDF] active:bg-[#F5AFAF] transition ease-in-out duration-150">
                 {{ __('Confirm') }}
             </x-primary-button>
         </div>

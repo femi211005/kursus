@@ -1,48 +1,48 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit User') }}
-        </h2>
-    </x-slot>
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            
-            <div class="p-6 bg-white border-b border-gray-200">
-                <form method="POST" action="{{ route('admin.categories.update', $category->id) }}">
+<div class="py-8">
+    <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-br from-[#FCF8F8] via-[#FBEFEF] to-[#F9DFDF]/40 shadow-md sm:rounded-2xl border border-[#F5AFAF]/20">
+            <div class="p-6 sm:p-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    {{ __('Update Category') }}
+                </h3>
+
+                <form method="POST" action="{{ route('admin.categories.update', $category->id) }}" class="space-y-6">
                     @csrf
                     @method('PUT')
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="grid grid-cols-1 gap-6">
-                            <div class="grid grid-cols-1 gap-6">
-                                <!-- Name -->
-                                <div>
-                                    <label for="name" class="block text-sm font-medium text-gray-700">
-                                        {{ __('Name') }}
-                                    </label>
-                                    <input id="name" 
-                                        class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-300" 
-                                        type="text" name="name" 
-                                        value="{{ old('name', $category->name) }}" 
-                                        required autofocus />
-                                </div>
 
-                              
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-end mt-4">
-                            <button type="submit" class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-sky-950 rounded-full border border-gray-200 hover:bg-gray-800 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100">
-                                {{ __('Update Category') }}
-                            </button>
-                        </div>
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+                            {{ __('Name') }}
+                        </label>
+                        <input id="name"
+                               type="text"
+                               name="name"
+                               value="{{ old('name', $category->name) }}"
+                               required autofocus
+                               class="block w-full rounded-lg border border-[#F5AFAF]/40 bg-white/80 shadow-sm px-3 py-2 text-sm text-gray-800
+                                      focus:outline-none focus:ring-2 focus:ring-[#F9DFDF] focus:border-[#F5AFAF] transition" />
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 pt-2">
+                        <a href="{{ route('admin.categories.index') }}"
+                           class="inline-flex items-center gap-2 rounded-full border border-[#F5AFAF]/40 bg-white text-sm font-medium text-[#F5AFAF] px-4 py-2
+                                  hover:bg-[#FCF8F8] hover:border-[#F5AFAF] transition">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+                            </svg>
+                            {{ __('Back') }}
+                        </a>
+
+                        <button type="submit"
+                                class="inline-flex items-center rounded-full bg-gradient-to-r from-[#F5AFAF] to-[#F9DFDF] px-5 py-2 text-sm font-semibold text-white
+                                       shadow-md hover:shadow-lg hover:from-[#F9DFDF] hover:to-[#F5AFAF] transition">
+                            {{ __('Update Category') }}
+                        </button>
                     </div>
                 </form>
-                <a href="{{ route('admin.categories.index') }}" class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-white focus:outline-none bg-sky-950 rounded-full border border-gray-200 hover:bg-gray-800 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100">
-                    <svg class="w-6 h-6 text-white inline-block mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
-                    </svg>                      
-                    Back
-                </a>
+
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>

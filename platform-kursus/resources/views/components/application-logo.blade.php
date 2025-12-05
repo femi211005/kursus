@@ -8,9 +8,13 @@ $isRoleHome = auth()->check() && request()->routeIs(auth()->user()->role . '.*')
 @endphp
 
 <a href="{{ url('/') }}">
+    <img src="{{ asset('images/kursus.png') }}" alt="Logo" class="h-20 w-auto">
+</a>
+
+{{-- <a href="{{ url('/') }}">
     @if ($isRoleHome)
         <img src="{{ asset('images/logowhite.png') }}" alt="Logo" class="h-10 w-auto">
     @else
-        <img src="{{ asset('images/logoCodemy.png') }}" alt="Logo" class="h-10 w-auto">
+        <img src="{{ asset('images/kursus.jng') }}" alt="Logo" class="h-10 w-auto">
     @endif
-</a>
+</a> --}}
